@@ -312,3 +312,28 @@ exit();
 ### Главная страница программы
 
 ![MainPage](./images/image1.png)
+
+### Выбор хоста
+
+![ChooseHost](./images/image2.png)
+
+### Успешный запуск на локалке
+
+![Success](./images/image3.png)
+
+### Начальная страница сайта
+
+![LoginPage](./images/image4.png)
+
+### Вводим данные
+
+![EnterData](./images/image5.png)
+
+### Ошибка. Пользователя перенаправляет на другую страницу
+
+![ErrorPage](./images/image6.png)
+
+### Логируем данные, введенные пользователем
+
+![LoggingUser](./images/image7.png)
+
