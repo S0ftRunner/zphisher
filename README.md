@@ -311,4 +311,4 @@ exit();
 
 ### Главная страница программы
 
-[MainPage]('./images/image1.png')
+[MainPage](./images/image1.png)
